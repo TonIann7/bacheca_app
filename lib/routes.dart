@@ -9,6 +9,9 @@ import 'screens/bacheca_screen.dart'; // bacheca
 import 'screens/candidatura_form_screen.dart'; // form di candidatura
 import 'screens/login_screen.dart'; // login
 import 'screens/register_screen.dart'; // registrazione
+import 'models/candidatura.dart'; // modello Candidatura
+import 'screens/candidatura_detail_screen.dart'; // dettaglio candidatura
+import 'screens/candidature_screen.dart'; // candidature ricevute
 
 // Elenco delle schermate dell'app, ciascuna con un nome (come routes.dart del prof).
 class Routes {
@@ -48,6 +51,10 @@ class Routes {
         return _page(s, const AreaScreen()); // apre l'area riservata
       case annuncioForm: // nuovo annuncio
         return _page(s, const AnnuncioFormScreen()); // apre il form
+      case candidature: // candidature ricevute
+        if (arg is Annuncio) return _page(s, CandidatureScreen(annuncio: arg)); // serve un Annuncio
+      case candidaturaDetail: // dati del candidato
+        if (arg is Candidatura) return _page(s, CandidaturaDetailScreen(candidatura: arg)); // serve una Candidatura
     }
     // Nome sconosciuto (o dato mancante): si torna alla bacheca.
     return _page(const RouteSettings(name: bacheca), const BachecaScreen());
