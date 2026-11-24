@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // MultiProvider, ChangeNotifierProvider
-
+import 'routes.dart'; // nomi e apertura delle schermate
 import 'providers/auth_provider.dart';
 import 'services/api_client.dart';
 
@@ -49,7 +49,8 @@ class _BachecaAppState extends State<BachecaApp> {
             border: OutlineInputBorder(), // tutti i campi di testo con il bordo
           ),
         ),
-        home: const _ProvaConnessione(), // TEMPORANEO: lo sostituiremo con la bacheca in B1
+        initialRoute: Routes.bacheca, // prima schermata: la bacheca
+        onGenerateRoute: Routes.generate, // come aprire le schermate dato il loro nome
       ),
     );
   }

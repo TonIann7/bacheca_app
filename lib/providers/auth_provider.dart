@@ -46,12 +46,11 @@ class AuthProvider extends ChangeNotifier {
         body: {'email': email, 'password': password});
     await _setSession((json as Map).cast<String, dynamic>());
   }
-
   // R1: registrazione (dopo la quale il server ci considera già loggati).
+  // R1: registrazione. Crea solo l'account: poi l'azienda dovrà fare il login (S1, passo 2).
   Future<void> register(String nome, String email, String password) async {
-    final json = await _api.post('/api/auth/register',
-        body: {'nome': nome, 'email': email, 'password': password});
-    await _setSession((json as Map).cast<String, dynamic>());
+    await _api.post('/api/auth/register', // chiede al server di creare l'account
+        body: {'nome': nome, 'email': email, 'password': password}); // dati inseriti nel form
   }
 
   // R3: logout.
