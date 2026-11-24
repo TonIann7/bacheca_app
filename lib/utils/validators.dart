@@ -17,6 +17,15 @@ class Validators {
     if (!_email.hasMatch(s)) return 'Email non valida'; // non rispetta il formato
     return null; // tutto ok
   }
+
+  // Password: almeno 6 caratteri, la stessa regola del server.
+  static String? password(String? v) {
+    final s = v ?? ''; // niente trim: gli spazi possono far parte della password
+    if (s.isEmpty) return 'Inserisci la password'; // vuota
+    if (s.length < 6) return 'Almeno 6 caratteri'; // troppo corta
+    return null; // tutto ok
+  }
+
 }
 
 // Formattazione dei valori da mostrare a schermo.

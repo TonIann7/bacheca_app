@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; // widget Material
-
+import 'package:provider/provider.dart'; // context.watch
+import '../providers/auth_provider.dart'; // stato del login
 import '../models/annuncio.dart'; // modello Annuncio
 import '../routes.dart'; // nomi delle schermate
 import '../utils/validators.dart'; // Fmt
@@ -12,6 +13,7 @@ class AnnuncioDetailScreen extends StatelessWidget { // Stateless: qui non cambi
 
   @override
   Widget build(BuildContext context) {
+    final loggata = context.watch<AuthProvider>().isLoggedIn; // c'è un'azienda autenticata?
     final text = Theme.of(context).textTheme; // stili di testo del tema
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +48,7 @@ class AnnuncioDetailScreen extends StatelessWidget { // Stateless: qui non cambi
           Text(annuncio.descrizione, style: text.bodyLarge), // descrizione completa
         ],
       ),
-      bottomNavigationBar: SafeArea( // barra fissa in basso, fuori dai bordi del telefono
+      bottomNavigationBar: loggata ? null : SafeArea( // niente pulsante se è loggata un'azienda
         child: Padding(
           padding: const EdgeInsets.all(16), // spazio attorno
           child: FilledButton.icon(

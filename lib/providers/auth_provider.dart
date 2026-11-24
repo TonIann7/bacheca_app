@@ -11,9 +11,11 @@ class AuthProvider extends ChangeNotifier {
   final ApiClient _api; // per parlare col server
   Azienda? _azienda; // azienda loggata (null = nessuno)
   bool _initializing = true; // true mentre all'avvio controlliamo se c'era una sessione salvata
+  bool _manualLogout = false; // true durante il logout chiesto dall'utente
+  bool sessionExpired = false; // true se il server non riconosce più il token (lo legge main.dart)
 
   AuthProvider(this._api) {
-    _api.onUnauthorized = _clearLocal; // se il server dice 401, usciamo in locale
+    _api.onUnauthorized = _handleUnauthorized; // cosa fare quando il server risponde 401
   }
 
   Azienda? get azienda => _azienda; // chi è loggato
@@ -54,13 +56,16 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // R3: logout.
+  // R3: logout.
   Future<void> logout() async {
+    _manualLogout = true; // un eventuale 401 adesso non è una "sessione scaduta"
     try {
       await _api.post('/api/auth/logout'); // invalida il token sul server
     } catch (_) {
       // anche se il server non risponde, usciamo comunque in locale
     }
-    await _clearLocal();
+    await _clearLocal(); // dimentica la sessione sul telefono
+    _manualLogout = false; // logout terminato
   }
 
   // Salva token e azienda dopo login/registrazione.
@@ -71,6 +76,13 @@ class AuthProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token); // lo ricordiamo anche se l'app viene chiusa
     notifyListeners(); // le schermate che ascoltano si aggiornano
+  }
+
+  // Il server ha risposto 401: il token non vale più (es. server riavviato).
+  void _handleUnauthorized() {
+    if (_azienda == null || _initializing || _manualLogout) return; // casi già gestiti altrove
+    sessionExpired = true; // main.dart porterà l'utente al login
+    _clearLocal(); // dimentica la sessione
   }
 
   // Dimentica la sessione: niente token, niente azienda.
